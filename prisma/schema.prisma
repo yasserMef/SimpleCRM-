@@ -1,0 +1,69 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model entreprise {
+  id Int @id @default(autoincrement())
+  nom_entreprise String @db.VarChar(50) @unique
+  siege_social String  @unique
+  date_creation DateTime  @default(now())
+  identifiant_fiscal BigInt @unique
+  capital Float
+  nombre_employes Int
+  ville String @db.VarChar(50)
+  responsable String @db.VarChar(50)
+  tele BigInt  @unique
+  email String @unique
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model product{
+  id Int @id @default(autoincrement())
+  quantite Int
+  prix_achat Float
+  prix_vente Float
+  taux_marge Float
+  dimension Int
+  color String @db.VarChar(30)
+  detailFactures detailFacture[]
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+}
+
+model client{
+  id  Int @id @default(autoincrement())
+  Nom String @db.VarChar(30)
+  prenom String @db.VarChar(30)
+  adresse String @unique
+  ville String @db.VarChar(30)
+  tele String @unique
+  email String  @unique
+  factures facture[]
+  createdAt DateTime @default(now()) 
+  updatedAt DateTime @updatedAt 
+}
+
+model facture{
+  id Int @id @default(autoincrement())
+  detailFactures detailFacture[]
+  clt   client @relation(fields: [cltId], references: [id],onDelete:Cascade)
+  cltId Int
+}
+
+model detailFacture{
+  prod product @relation(fields: [prodId], references: [id])
+  prodId Int
+  fact facture @relation(fields: [factId], references: [id])
+  factId Int 
+  qauntite Int
+ @@id([prodId,factId])
+}
